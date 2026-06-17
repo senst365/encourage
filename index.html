@@ -11,6 +11,17 @@
   <!-- 引入 Babel 用於在瀏覽器中編譯 JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- 強制 Babel 使用 Classic 模式，避免模組化環境遺失 importmap 導致的 react/jsx-runtime 錯誤 -->
+  <script>
+    if (window.Babel) {
+      window.Babel.registerPreset('react-classic', {
+        presets: [
+          [window.Babel.availablePresets['react'], { runtime: 'classic' }]
+        ]
+      });
+    }
+  </script>
+
   <style>
     body { font-family: sans-serif; }
     .bg-dot-pattern { background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
@@ -26,7 +37,9 @@
   <div id="root"></div>
 
   <!-- 主要應用程式邏輯 (設定為 module 以支援 import) -->
-  <script type="text/babel" data-type="module">
+  <script type="text/babel" data-type="module" data-presets="env,react-classic">
+    /** @jsx React.createElement */
+    /** @jsxFrag React.Fragment */
     import React, { useState, useEffect } from 'https://esm.sh/react@18.2.0';
     import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
     
@@ -2052,7 +2065,7 @@
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {filteredStudents.length === 0 && searchQuery ? (
                          <div className="col-span-full text-center py-12 text-gray-400">
-                            找不到符合「{searchQuery}」的學生
+                           找不到符合「{searchQuery}」的學生
                          </div>
                       ) : (
                         filteredStudents.map((student, index) => {
